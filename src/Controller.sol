@@ -1847,21 +1847,20 @@ contract Vault is SemiFungibleVault, ReentrancyGuard {
         @param  id  uint256 in UNIX timestamp, representing the end date of the epoch. Example: Epoch ends in 30th June 2022 at 00h 00min 00sec: 1654038000;
         @param receiver  address of the receiver of the shares provided by this function, that represent the ownership of the deposited asset;
      */
-    function depositETH(uint256 id, address receiver)
+    function depositETH(uint256 id, address receiver, uint256 amount)
         external
-        payable
         marketExists(id)
         epochHasNotStarted(id)
         nonReentrant
     {
-        require(msg.value > 0, "ZeroValue");
+        require(amount > 0, "ZeroValue");
         if(receiver == address(0))
             revert AddressZero();
 
-        IERC20(address(asset)).transferFrom(address(msg.sender), address(this), msg.value);
-        _mint(receiver, id, msg.value, EMPTY);
+        IERC20(address(asset)).transferFrom(address(msg.sender), address(this), amount);
+        _mint(receiver, id, amount, EMPTY);
 
-        emit Deposit(msg.sender, receiver, id, msg.value);
+        emit Deposit(msg.sender, receiver, id, amount);
     }
 
     /**
